@@ -1,3 +1,9 @@
+//function for verifie a vairable is an object
+
+function isObject(obj) {
+  return obj === Object(obj);
+}
+
 const exec = require("child_process").exec;
 
 function execute(command, callback) {
@@ -95,7 +101,7 @@ module.exports.push = function (file, devices, to) {
           if (error) {
             reject(error);
           } else {
-            resolve("app " + file + " is installed");
+            resolve("file : " + file + " is pushed in " + to);
           }
         }
       );
@@ -114,7 +120,7 @@ module.exports.pull = function (file, devices) {
           if (error) {
             reject(error);
           } else {
-            resolve("app " + file + " is installed");
+            resolve("get file : " + file + " success");
           }
         }
       );
@@ -123,3 +129,21 @@ module.exports.pull = function (file, devices) {
     }
   });
 };
+
+// class useAdb {
+//   devices = {
+//     name: null,
+//     status: null,
+//   };
+
+//   constructor() {}
+
+//   createClient(device) {
+//     if (isObject(device)) {
+//       if (device.name && device.status) {
+//         this.devices = device;
+//         return true;
+//       }
+//     }
+//   }
+// }
