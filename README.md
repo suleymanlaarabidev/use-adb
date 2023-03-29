@@ -4,9 +4,17 @@ lib for use adb in node js works 2022-2023
 
 ## quick-start
 
+- 1: add sdk-dir directory in your project link :
+
+- 2: include lib in your project and enjoy
+
 ```
 // init use-adb lib
 const adb = require("./use-adb");
+
+ adb.getDevices().then((devices)=>{
+  console.log(devices);
+ });
 ```
 
 # Features
@@ -42,9 +50,13 @@ to = device folder path to send the file to
 
 ### :pull: get targeted device file in local storage
 
-(file, devices, to)
+(file, devices)
 file = targeted path of the file to get
 devices = object of the device to which it send the file
+
+```
+ adb.pull("/sdcard/index.txt", "id_of_device");
+```
 
 ## reboot
 
@@ -53,3 +65,7 @@ devices = object of the device to which it send the file
 (mode, device)
 mode = desired mode name
 devices = object of the device to which it send the file
+
+```
+ adb.reboot("system", "id_of_device");
+```
