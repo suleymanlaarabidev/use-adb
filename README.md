@@ -1,8 +1,10 @@
 # use-adb
 
-lib for use adb in node js
+lib for use adb in node js works 2022-2023
 
 # Features
+
+- includes sdk implementation for windows, macOS and linux
 
 ## push
 

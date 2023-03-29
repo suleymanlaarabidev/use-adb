@@ -1,19 +1,23 @@
-const { rejects } = require("assert");
-
 //  include lib needed
+const { rejects } = require("assert");
 const exec = require("child_process").exec;
 
-// function for use shell command
-function execute(command, callback) {
-  exec(command, (error, stdout, stderr) => {
-    callback(stdout);
-  });
+// set the adb file path default for linux
+let adbFile = "./platform-tools-linux/adb";
+
+// verifie the platform and set the adb file path for the platform
+if (process.platform == "linux") {
+  adbFile = "./platform-tools-linux/adb";
+} else if (process.platform == "win32") {
+  adbFile = "./platform-tools-windows/adb.exe";
+} else if (process.platform == "darwin") {
+  adbFile = "./platform-tools-macos/adb";
 }
 
 // for get devices
 module.exports.getDevices = function () {
   return new Promise(function (resolve, reject) {
-    exec("adb devices", function (error, stdout, stderr) {
+    exec(adbFile + " devices", function (error, stdout, stderr) {
       if (error) {
         reject(error);
       } else {
@@ -35,11 +39,11 @@ module.exports.getDevices = function () {
 };
 
 // for reboot device
-module.exports.reboot = function (where, devices) {
+module.exports.reboot = function (mode, devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " reboot " + where,
+        adbFile + " -s " + devices.name + " reboot " + mode,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -49,7 +53,7 @@ module.exports.reboot = function (where, devices) {
           } else {
             resolve({
               error: false,
-              data: "Device is rebooting in " + where + " mode",
+              data: "Device is rebooting in " + mode + " mode",
             });
           }
         }
@@ -65,7 +69,7 @@ module.exports.installApk = function (file, devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " install -r " + file,
+        adbFile + " -s " + devices.name + " install -r " + file,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -94,7 +98,7 @@ module.exports.sideload = function (file, devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " sideload " + file,
+        adbFile + " -s " + devices.name + " sideload " + file,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -123,7 +127,7 @@ module.exports.push = function (file, devices, to) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " push " + file + " " + to,
+        adbFile + " -s " + devices.name + " push " + file + " " + to,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -152,7 +156,7 @@ module.exports.pull = function (file, devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " pull " + file,
+        adbFile + " -s " + devices.name + " pull " + file,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -181,7 +185,7 @@ module.exports.rmFile = function (file, devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " shell rm " + file,
+        adbFile + " -s " + devices.name + " shell rm " + file,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -210,7 +214,7 @@ module.exports.touchFile = function (file, devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " shell touch " + file,
+        adbFile + " -s " + devices.name + " shell touch " + file,
         function (error, stdout, stderr) {
           if (error) {
             reject({
@@ -239,7 +243,7 @@ module.exports.ls = function (devices) {
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
-        "adb -s " + devices.name + " shell ls /sdcard",
+        adbFile + " -s " + devices.name + " shell ls /sdcard",
         function (error, stdout, stderr) {
           if (error) {
             reject({
