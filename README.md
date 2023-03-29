@@ -6,7 +6,7 @@ lib for use adb in node js
 
 ## push
 
-:push: sends a local file to a folder on the targeted device
+### :push: sends a local file to a folder on the targeted device
 
 (file, devices, to)
 file = local path of the file to send
@@ -15,7 +15,7 @@ to = device folder path to send the file to
 
 ## pull
 
-:pull: get targeted device file in local storage
+### :pull: get targeted device file in local storage
 
 (file, devices, to)
 file = targeted path of the file to get
