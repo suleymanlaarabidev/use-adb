@@ -2,7 +2,7 @@
 
 lib for use adb in node js
 
-# features
+# Features
 
 ## push
 
@@ -19,4 +19,12 @@ to = device folder path to send the file to
 
 (file, devices, to)
 file = targeted path of the file to get
+devices = object of the device to which it send the file
+
+## reboot
+
+### :reboot: reboot targeted device in selected mode
+
+(mode, device)
+mode = desired mode name
 devices = object of the device to which it send the file
