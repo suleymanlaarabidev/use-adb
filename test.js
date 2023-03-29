@@ -1,4 +1,6 @@
 const adb = require("./use-adb");
+
+// set to trueor false reboot test
 const includeRebootTest = false;
 
 adb.getDevices().then((devices) => {
