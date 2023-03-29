@@ -12,3 +12,11 @@ lib for use adb in node js
 file = local path of the file to send
 devices = object of the device to which it send the file
 to = device folder path to send the file to
+
+## pull
+
+:pull: get targeted device file in local storage
+
+(file, devices, to)
+file = targeted path of the file to get
+devices = object of the device to which it send the file
