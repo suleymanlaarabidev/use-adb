@@ -15,6 +15,10 @@ file = local path of the file to send
 devices = object of the device to which it send the file
 to = device folder path to send the file to
 
+```
+ adb.push("/index.txt", "id_of_device", "/sdcard/");
+```
+
 ## pull
 
 ### :pull: get targeted device file in local storage
