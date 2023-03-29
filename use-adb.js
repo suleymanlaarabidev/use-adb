@@ -262,21 +262,3 @@ module.exports.ls = function (devices) {
     }
   });
 };
-
-// class useAdb {
-//   devices = {
-//     name: null,
-//     status: null,
-//   };
-
-//   constructor() {}
-
-//   createClient(device) {
-//     if (isObject(device)) {
-//       if (device.name && device.status) {
-//         this.devices = device;
-//         return true;
-//       }
-//     }
-//   }
-// }
