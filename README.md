@@ -1,10 +1,29 @@
-# use-adb
+# USE-ADB
 
 lib for use adb in node js works 2022-2023
+
+## quick-start
+
+```
+// init use-adb lib
+const adb = require("./use-adb");
+```
 
 # Features
 
 - includes sdk implementation for windows, macOS and linux
+
+## Get Devices
+
+### :getDevices: get all devices connected
+
+no setting
+
+```
+ adb.getDevices().then((devices)=>{
+  console.log(devices);
+ });
+```
 
 ## push
 
