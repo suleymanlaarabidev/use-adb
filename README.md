@@ -4,7 +4,9 @@ lib for use adb in node js works 2022-2023
 
 ## quick-start
 
-- 1: add sdk-dir directory in your project link :
+- 1: add sdk-dir directory in your project
+  link :
+  https://drive.google.com/drive/folders/1MzZMHOjXMa8pNZyIYWcnmLEKPjHrAwMf?usp=share_link
 
 - 2: include lib in your project and enjoy
 
