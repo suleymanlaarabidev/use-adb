@@ -23,6 +23,8 @@ const adb = require("./use-adb");
 
 - includes sdk implementation for windows, macOS and linux
 
+# Docs
+
 ## Get Devices
 
 ### :getDevices: get all devices connected
@@ -35,7 +37,7 @@ no setting
  });
 ```
 
-## push
+## Push
 
 ### :push: sends a local file to a folder on the targeted device
 
@@ -48,7 +50,7 @@ to = device folder path to send the file to
  adb.push("/index.txt", "id_of_device", "/sdcard/");
 ```
 
-## pull
+## Pull
 
 ### :pull: get targeted device file in local storage
 
@@ -60,7 +62,7 @@ devices = object of the device to which it send the file
  adb.pull("/sdcard/index.txt", "id_of_device");
 ```
 
-## reboot
+## Reboot
 
 ### :reboot: reboot targeted device in selected mode
 
