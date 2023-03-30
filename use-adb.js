@@ -2,20 +2,31 @@
 const { rejects } = require("assert");
 const exec = require("child_process").exec;
 
-// set the adb file path default for linux
-let adbFile = "./platform-tools-linux/adb";
+// get directory name for set the adb file path
+const path = require("path");
+const { isObject } = require("util");
+const dirname = path.resolve();
+
+//set path for adb file
+
+let adbFile = "";
 
 // verifie the platform and set the adb file path for the platform
 if (process.platform == "linux") {
-  adbFile = "./platform-tools-linux/adb";
+  adbFile = dirname + "/sdk-dir/platform-tools-linux/adb";
 } else if (process.platform == "win32") {
-  adbFile = "./platform-tools-windows/adb.exe";
+  adbFile = dirname + "/sdk-dir/platform-tools-windows/adb.exe";
 } else if (process.platform == "darwin") {
-  adbFile = "./platform-tools-macos/adb";
+  adbFile = dirname + "/sdk-dir/platform-tools-mac/adb";
 }
 
 // for get devices
-module.exports.getDevices = function () {
+module.exports.getDevices = function (customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     exec(adbFile + " devices", function (error, stdout, stderr) {
       if (error) {
@@ -39,7 +50,12 @@ module.exports.getDevices = function () {
 };
 
 // for reboot device
-module.exports.reboot = function (mode, devices) {
+module.exports.reboot = function (mode, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -65,7 +81,12 @@ module.exports.reboot = function (mode, devices) {
 };
 
 // for install apk
-module.exports.installApk = function (file, devices) {
+module.exports.installApk = function (file, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -93,8 +114,47 @@ module.exports.installApk = function (file, devices) {
   });
 };
 
+// for uninstall apk
+module.exports.uninstallApk = function (package, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
+  return new Promise(function (resolve, reject) {
+    if (devices.status == "device" || devices.status == "recovery") {
+      exec(
+        adbFile + " -s " + devices.name + " uninstall " + package,
+        function (error, stdout, stderr) {
+          if (error) {
+            reject({
+              error: true,
+              data: error,
+            });
+          } else {
+            resolve({
+              error: false,
+              data: "app " + package + " is uninstalled",
+            });
+          }
+        }
+      );
+    } else {
+      reject({
+        error: true,
+        data: "Device is not authorized",
+      });
+    }
+  });
+};
+
 // for sideload file
-module.exports.sideload = function (file, devices) {
+module.exports.sideload = function (file, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -123,7 +183,12 @@ module.exports.sideload = function (file, devices) {
 };
 
 // for push file
-module.exports.push = function (file, devices, to) {
+module.exports.push = function (file, devices, to, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -152,7 +217,12 @@ module.exports.push = function (file, devices, to) {
 };
 
 // for pull file
-module.exports.pull = function (file, devices) {
+module.exports.pull = function (file, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -181,7 +251,12 @@ module.exports.pull = function (file, devices) {
 };
 
 // for rm file
-module.exports.rmFile = function (file, devices) {
+module.exports.rmFile = function (file, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -210,7 +285,12 @@ module.exports.rmFile = function (file, devices) {
 };
 
 // for touch file
-module.exports.touchFile = function (file, devices) {
+module.exports.touchFile = function (file, devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -239,7 +319,12 @@ module.exports.touchFile = function (file, devices) {
 };
 
 // for mkdir file
-module.exports.ls = function (devices) {
+module.exports.ls = function (devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
   return new Promise(function (resolve, reject) {
     if (devices.status == "device" || devices.status == "recovery") {
       exec(
@@ -265,4 +350,221 @@ module.exports.ls = function (devices) {
       });
     }
   });
+};
+
+// for get packages
+module.exports.getPackages = function (devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
+  return new Promise(function (resolve, reject) {
+    if (devices.status == "device" || devices.status == "recovery") {
+      exec(
+        adbFile + " -s " + devices.name + " shell pm list packages",
+        function (error, stdout, stderr) {
+          if (error) {
+            reject({
+              error: true,
+              data: error,
+            });
+          } else {
+            resolve({
+              error: false,
+              data: stdout,
+            });
+          }
+        }
+      );
+    } else {
+      reject({
+        error: true,
+        data: "Device is not authorized",
+      });
+    }
+  });
+};
+
+// home button
+module.exports.home = function (devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
+  return new Promise(function (resolve, reject) {
+    if (devices.status == "device" || devices.status == "recovery") {
+      exec(
+        adbFile + " -s " + devices.name + " shell input keyevent 3",
+        function (error, stdout, stderr) {
+          if (error) {
+            reject({
+              error: true,
+              data: error,
+            });
+          } else {
+            resolve({
+              error: false,
+              data: "home button success",
+            });
+          }
+        }
+      );
+    } else {
+      reject({
+        error: true,
+        data: "Device is not authorized",
+      });
+    }
+  });
+};
+
+// back button
+module.exports.back = function (devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
+  return new Promise(function (resolve, reject) {
+    if (devices.status == "device" || devices.status == "recovery") {
+      exec(
+        adbFile + " -s " + devices.name + " shell input keyevent 4",
+        function (error, stdout, stderr) {
+          if (error) {
+            reject({
+              error: true,
+              data: error,
+            });
+          } else {
+            resolve({
+              error: false,
+              data: "back button success",
+            });
+          }
+        }
+      );
+    } else {
+      reject({
+        error: true,
+        data: "Device is not authorized",
+      });
+    }
+  });
+};
+
+// turn on/off screen
+module.exports.screen = function (devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
+  return new Promise(function (resolve, reject) {
+    if (devices.status == "device" || devices.status == "recovery") {
+      exec(
+        adbFile + " -s " + devices.name + " shell input keyevent 26",
+        function (error, stdout, stderr) {
+          if (error) {
+            reject({
+              error: true,
+              data: error,
+            });
+          } else {
+            resolve({
+              error: false,
+              data: "screen button success",
+            });
+          }
+        }
+      );
+    } else {
+      reject({
+        error: true,
+        data: "Device is not authorized",
+      });
+    }
+  });
+};
+
+// start browser
+module.exports.browser = function (devices, customPath) {
+  // check if a custom path for adb process has been filled
+  if (customPath) {
+    // set custom path for adb
+    adbFile = customPath + "adb";
+  }
+  return new Promise(function (resolve, reject) {
+    if (devices.status == "device" || devices.status == "recovery") {
+      exec(
+        adbFile +
+          " -s " +
+          devices.name +
+          " shell am start -a android.intent.action.VIEW -d https://google.com",
+        function (error, stdout, stderr) {
+          if (error) {
+            reject({
+              error: true,
+              data: error,
+            });
+          } else {
+            resolve({
+              error: false,
+              data: "browser button success",
+            });
+          }
+        }
+      );
+    } else {
+      reject({
+        error: true,
+        data: "Device is not authorized",
+      });
+    }
+  });
+};
+
+module.exports.adbClient = class {
+  client = null;
+  constructor(device) {
+    if (device) {
+      this.createClient(device);
+    }
+  }
+
+  getDevices() {
+    return new Promise((resolve, reject) => {
+      exec(adbFile + " devices", function (error, stdout, stderr) {
+        if (error) {
+          reject(error);
+        } else {
+          let devicesListe = [];
+          var devices = stdout.replace("List of devices attached", "");
+          devices = devices.split("\n");
+          devices.forEach((device) => {
+            if (device.length > 0) {
+              devicesListe.push({
+                name: device.split("\t")[0],
+                status: device.split("\t")[1],
+              });
+            }
+          });
+          resolve(devicesListe);
+        }
+      });
+    });
+  }
+
+  createClient(device) {
+    if (isObject(device)) {
+      if (device.status == "device" || device.status == "recovery") {
+        this.client = device;
+      } else {
+        throw new Error("Device is not authorized");
+      }
+    } else {
+      throw new Error("Device is not object");
+    }
+  }
 };
