@@ -527,9 +527,9 @@ module.exports.browser = function (devices, customPath) {
 
 module.exports.adbClient = class {
   // the client object variable
-  client = null;
 
   constructor(device) {
+    this.client = null;
     // start the server if not started
     this.startServer();
     // check if a device is filled
@@ -705,6 +705,32 @@ module.exports.adbClient = class {
     });
   }
 
+  listFile(devicePath) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell ls " + devicePath,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              let filesList = [];
+              var files = stdout.split("\n");
+              files.forEach((file) => {
+                if (file.length > 0) {
+                  filesList.push(file);
+                }
+              });
+              resolve(filesList);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
   // function for pull a file from device
   pullFile(devicePath, localPath) {
     return new Promise((resolve, reject) => {
@@ -827,6 +853,25 @@ module.exports.adbClient = class {
       if (this.client) {
         exec(
           adbFile + " -s " + this.client.name + " shell input keyevent 4",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  openMenu() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell input keyevent 82",
           function (error, stdout, stderr) {
             if (error) {
               reject(error);
