@@ -526,13 +526,33 @@ module.exports.browser = function (devices, customPath) {
 };
 
 module.exports.adbClient = class {
+  // the client object variable
   client = null;
+
   constructor(device) {
+    // start the server if not started
+    this.startServer();
+    // check if a device is filled
     if (device) {
+      // create client
       this.createClient(device);
     }
   }
 
+  // function for start the server
+  startServer() {
+    return new Promise((resolve, reject) => {
+      exec(adbFile + " start-server", function (error, stdout, stderr) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(stdout);
+        }
+      });
+    });
+  }
+
+  // function for get all devices connected
   getDevices() {
     return new Promise((resolve, reject) => {
       exec(adbFile + " devices", function (error, stdout, stderr) {
@@ -566,5 +586,327 @@ module.exports.adbClient = class {
     } else {
       throw new Error("Device is not object");
     }
+  }
+
+  // function for installAPK
+  installAPK(apkPath) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " install " + apkPath,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for uninstallAPK
+  uninstallAPK(packageName) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " uninstall " + packageName,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for get all installed apps
+  getInstalledApps() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell pm list packages",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              let appsList = [];
+              var apps = stdout.split("\n");
+              apps.forEach((app) => {
+                if (app.length > 0) {
+                  appsList.push(app.replace("package:", ""));
+                }
+              });
+              resolve(appsList);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for reboot device in recovery oy system or bootloader
+  reboot(mode) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        if (mode == "recovery" || mode == "system" || mode == "bootloader") {
+          exec(
+            adbFile + " -s " + this.client.name + " reboot " + mode,
+            function (error, stdout, stderr) {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(stdout);
+              }
+            }
+          );
+        } else {
+          reject("Mode is not valid");
+        }
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for push a file to device
+  pushFile(localPath, devicePath) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            " push " +
+            localPath +
+            " " +
+            devicePath,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for pull a file from device
+  pullFile(devicePath, localPath) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            " pull " +
+            devicePath +
+            " " +
+            localPath,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for remove a file from device
+  removeFile(devicePath) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell rm " + devicePath,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for get device info
+  getDeviceInfo() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell getprop",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              let deviceInfo = {};
+              var infos = stdout.split("\n");
+              infos.forEach((info) => {
+                if (info.length > 0) {
+                  deviceInfo[info.split(":")[0]] = info.split(":")[1];
+                }
+              });
+              resolve(deviceInfo);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for get device info
+  getDeviceModel() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            " shell getprop ro.product.model",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for go to home screen
+  goToHome() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell input keyevent 3",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for go to back screen
+  goBack() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell input keyevent 4",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function turn of or on the screen
+  turnScreenOnOff() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell input keyevent 26",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for open browser
+  openBrowser(url) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            " shell am start -a android.intent.action.VIEW -d " +
+            url,
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for open app
+  openApp(packageName) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            " shell monkey -p " +
+            packageName +
+            " -c android.intent.category.LAUNCHER 1",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
   }
 };
