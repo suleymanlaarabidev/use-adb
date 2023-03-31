@@ -73,3 +73,15 @@ devices = object of the device to which it send the file
 ```
  adb.reboot("system", "id_of_device");
 ```
+
+## Install Apk
+
+### :installApk: install apk to targeted device
+
+(file, device)
+mode = local path of apk
+devices = object of the device to which it send the file
+
+```
+ adb.reboot("system", "id_of_device");
+```

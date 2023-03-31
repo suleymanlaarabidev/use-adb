@@ -33,9 +33,23 @@ function inputEvent(devices) {
               } else {
                 adb.screen(devices[deviceSelected]).then((res) => {
                   if (res.error) {
-                    throw new Error("Test 7 failed: unable to turn on screen");
+                    throw new Error(
+                      "Test 7 failed: unable to turn off the screen"
+                    );
                   } else {
-                    console.log("Test 7 passed: screen on success");
+                    setTimeout(() => {
+                      adb.screen(devices[deviceSelected]).then((res) => {
+                        if (res.error) {
+                          throw new Error(
+                            "Test 7 failed: unable to turn on the screen"
+                          );
+                        } else {
+                          console.log(
+                            "Test 7 passed: screen off and all event key success"
+                          );
+                        }
+                      });
+                    }, 500);
                   }
                 });
               }
