@@ -14,9 +14,20 @@ lib for use adb in node js works 2022-2023
 // init use-adb lib
 const adb = require("./use-adb");
 
- adb.getDevices().then((devices)=>{
-  console.log(devices);
- });
+const adbClient = new adb.adbClient();
+
+adbClient.startServer().then((res) => {
+  if (res.error) {
+    throw new Error("unable to start server");
+  } else {
+    adbClient.getDevices().then((devices) => {
+      adbClient.createClient(devices[0]);
+      if (adbClient.client) {
+        console.log("device connected");
+      }
+    });
+  }
+});
 ```
 
 # Features
