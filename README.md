@@ -43,56 +43,42 @@ adbClient.startServer().then((res) => {
 no setting
 
 ```
- adb.getDevices().then((devices)=>{
+ adbClient.getDevices().then((devices)=>{
   console.log(devices);
  });
 ```
 
 ## Push
 
-### :push: sends a local file to a folder on the targeted device
+### :pushFile: sends a local file to a folder on the targeted device
 
-(file, devices, to)
-file = local path of the file to send
-devices = object of the device to which it send the file
-to = device folder path to send the file to
+(localPath, devicePath)
+localPath = local path of the file to send
+devicePath = device folder path to send the file to
 
 ```
- adb.push("/index.txt", "id_of_device", "/sdcard/");
+ adbClient.push("/index.txt", "/sdcard/");
 ```
 
 ## Pull
 
-### :pull: get targeted device file in local storage
+### :pullFile: get targeted device file in local storage
 
-(file, devices)
-file = targeted path of the file to get
-devices = object of the device to which it send the file
+(localPath, devicePath)
+localPath = local path of the file to send
+devicePath = device folder path to send the file to
 
 ```
- adb.pull("/sdcard/index.txt", "id_of_device");
+ adbClient.pull("/sdcard/index.txt");
 ```
 
 ## Reboot
 
 ### :reboot: reboot targeted device in selected mode
 
-(mode, device)
+(mode)
 mode = desired mode name
-devices = object of the device to which it send the file
 
 ```
- adb.reboot("system", "id_of_device");
-```
-
-## Install Apk
-
-### :installApk: install apk to targeted device
-
-(file, device)
-mode = local path of apk
-devices = object of the device to which it send the file
-
-```
- adb.reboot("system", "id_of_device");
+ adbClient.reboot("system");
 ```
