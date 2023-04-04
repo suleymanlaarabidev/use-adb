@@ -12,6 +12,93 @@ process.argv.forEach((val, index) => {
   }
 });
 
+// Test 32: get serial number
+function Test32() {
+  adbClient.getSerialNumber().then((res) => {
+    if (res.error) {
+      throw new Error("Test 32 failed: unable to get serial number");
+    } else {
+      console.log(
+        "Test 32 passed: get serial number success" + "Serial number: " + res
+      );
+    }
+  });
+}
+
+// Test 31: get battery level
+function Test31() {
+  adbClient.getBatteryLevel().then((res) => {
+    if (res.error) {
+      throw new Error("Test 31 failed: unable to get battery level");
+    } else {
+      console.log(
+        "Test 31 passed: get battery level success" + "Battery level: " + res
+      );
+      Test32();
+    }
+  });
+}
+
+// Test 30: turn gps off REQUIRE ROOT
+function Test30() {
+  adbClient.turnGpsOnOff("0").then((res) => {
+    if (res.error) {
+      throw new Error("Test 30 failed: unable to turn gps off");
+    } else {
+      console.log("Test 30 passed: turn gps off success");
+      Test31();
+    }
+  });
+}
+
+// Test 29: turn mobile data on REQUIRE ROOT
+function Test29() {
+  adbClient.turnMobileDataOnOff("disable").then((res) => {
+    if (res.error) {
+      throw new Error("Test 29 failed: unable to turn mobile data on");
+    } else {
+      console.log("Test 29 passed: turn mobile data on success");
+      Test30();
+    }
+  });
+}
+
+// Test 28: turn airplane mode on REQUIRE ROOT
+function Test28() {
+  adbClient.turnAirplaneModeOnOff("1").then((res) => {
+    if (res.error) {
+      throw new Error("Test 28 failed: unable to turn airplane mode on");
+    } else {
+      console.log("Test 28 passed: turn airplane mode on success");
+      Test29();
+    }
+  });
+}
+
+// Test 27: turn bluetooth on/off REQUIRE ROOT
+function Test27() {
+  adbClient.turnBluetoothOnOff("8").then((res) => {
+    if (res.error) {
+      throw new Error("Test 27 failed: unable to turn bluetooth off");
+    } else {
+      console.log("Test 27 passed: turn bluetooth off success");
+      Test28();
+    }
+  });
+}
+
+// Test 26: volume mute
+function Test26() {
+  adbClient.volumeMute().then((res) => {
+    if (res.error) {
+      throw new Error("Test 26 failed: unable to volume mute");
+    } else {
+      console.log("Test 26 passed: volume mute success");
+      Test27();
+    }
+  });
+}
+
 // Test 25: volume down
 function Test25() {
   adbClient.volumeDown().then((res) => {
@@ -19,6 +106,7 @@ function Test25() {
       throw new Error("Test 25 failed: unable to volume down");
     } else {
       console.log("Test 25 passed: volume down success");
+      Test26();
     }
   });
 }
@@ -35,9 +123,9 @@ function Test24() {
   });
 }
 
-// Test 23: turn onn/off wifi
+// Test 23: turn on/off wifi
 function Test23() {
-  adbClient.turnWifiOnOff("enable").then((res) => {
+  adbClient.turnWifiOnOff("disable").then((res) => {
     if (res.error) {
       throw new Error("Test 23 failed: unable to turn on/off wifi");
     } else {
