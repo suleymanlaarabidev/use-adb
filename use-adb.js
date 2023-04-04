@@ -27,13 +27,7 @@ module.exports.adbClient = class {
     this.client = null;
     this.isStarded = false;
     // start the server if not started
-    this.startServer().then((res) => {
-      if (res.error) {
-        throw new Error("Unable to start server");
-      } else {
-        this.isStarded = true;
-      }
-    });
+    this.startServer();
 
     // check if a device is filled
     if (device) {
@@ -47,12 +41,21 @@ module.exports.adbClient = class {
     return new Promise((resolve, reject) => {
       exec(adbFile + " start-server", function (error, stdout, stderr) {
         if (error) {
-          // set isStarted to false
-
           reject(error);
         } else {
-          // set isStarted to true
+          resolve(stdout);
+        }
+      });
+    });
+  }
 
+  // function for stop the server | not tested
+  stopServer() {
+    return new Promise((resolve, reject) => {
+      exec(adbFile + " kill-server", function (error, stdout, stderr) {
+        if (error) {
+          reject(error);
+        } else {
           resolve(stdout);
         }
       });
@@ -620,6 +623,168 @@ module.exports.adbClient = class {
       if (this.client) {
         exec(
           adbFile + " -s " + this.client.name + " shell input keyevent 25",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for mute volume | not tested
+  volumeMute() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell input keyevent 164",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for turn on-off bluetooth REQUIRES ROOT
+  turnBluetoothOnOff(mode) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            ' shell su -c "service call bluetooth_manager ' +
+            mode +
+            '"',
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for turn on-off airplane mode REQUIRES ROOT
+  turnAirplaneModeOnOff(mode /* 1 or 0 */) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            ' shell su -c "settings put global airplane_mode_on ' +
+            mode +
+            '"',
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for turn on-off data REQUIRES ROOT
+  turnMobileDataOnOff(mode /* enable or disable */) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            ' shell su -c "svc data ' +
+            mode +
+            '"',
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for turn on-off gps ROOT REQUIRED
+  turnGpsOnOff(mode /* 3 or 0 */) {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile +
+            " -s " +
+            this.client.name +
+            ' shell su -c "settings put secure location_mode ' +
+            mode +
+            '"',
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for get battery level
+  getBatteryLevel() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell dumpsys battery",
+          function (error, stdout, stderr) {
+            if (error) {
+              reject(error);
+            } else {
+              let level = stdout.split("level: ")[1];
+              level = level.split(" ")[0];
+              resolve(level);
+            }
+          }
+        );
+      } else {
+        reject("Client is not defined");
+      }
+    });
+  }
+
+  // function for get serial number
+  getSerialNumber() {
+    return new Promise((resolve, reject) => {
+      if (this.client) {
+        exec(
+          adbFile + " -s " + this.client.name + " shell getprop ro.serialno",
           function (error, stdout, stderr) {
             if (error) {
               reject(error);
